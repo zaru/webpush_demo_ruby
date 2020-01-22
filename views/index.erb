@@ -1,1 +1,62 @@
-hoge
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>WebPush Demo App</title>
+  <link rel="manifest" href="/manifest.json" />
+</head>
+<body>
+<h1>WebPush Demo App</h1>
+<button id="btn-enable">webpush enable</button>
+<h2>VAPID Keys</h2>
+<ul>
+  <li>PublicKey: <%= @public_key %></li>
+  <li>PrivateKey: <%= @private_key %></li>
+</ul>
+<h2>Your WebPush information</h2>
+<ul>
+  <li>endpoint: <span id="endpoint"></span></li>
+  <li>p256dh: <span id="p256dh"></span></li>
+  <li>auth: <span id="auth"></span></li>
+</ul>
+<button id="btn-push">Push your UserAgent</button>
+<script>
+  window.vapidPublicKey = new Uint8Array(<%= Base64.urlsafe_decode64(@public_key).bytes %>)
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await navigator.serviceWorker.register('/serviceworker.js')
+    showWebPushData()
+  })
+
+  async function getWebPushData() {
+    const sw = await navigator.serviceWorker.ready
+    const subscription = await sw.pushManager.getSubscription()
+    return subscription ? subscription.toJSON() : null
+  }
+
+  async function showWebPushData() {
+    const data = await getWebPushData()
+    if (data) {
+      document.getElementById('endpoint').innerText = data.endpoint
+      document.getElementById('p256dh').innerText = data.keys.p256dh
+      document.getElementById('auth').innerText = data.keys.auth
+      console.log(data)
+    }
+  }
+
+  document.getElementById('btn-enable').addEventListener('click', async () => {
+    const sw = await navigator.serviceWorker.ready
+    await sw.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: window.vapidPublicKey
+    })
+    showWebPushData()
+  })
+  document.getElementById('btn-push').addEventListener('click', async () => {
+    // do push notification...
+  })
+</script>
+</body>
+</html>
