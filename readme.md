@@ -2,6 +2,12 @@
 
 [webpush gem](https://github.com/zaru/webpush) Demo app.
 
+## Requirements
+
+- Chrome 50+
+- Firefox 48+
+- Edge 79+
+
 ## Development
 
 ```
