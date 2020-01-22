@@ -2,7 +2,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.0)
+    hkdf (0.3.0)
     jaro_winkler (1.5.4)
+    jwt (2.2.1)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     parallel (1.19.1)
@@ -12,6 +14,7 @@ GEM
     rack-protection (2.0.8.1)
       rack
     rainbow (3.0.0)
+    rake (13.0.1)
     rubocop (0.79.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
@@ -28,13 +31,18 @@ GEM
       tilt (~> 2.0)
     tilt (2.0.10)
     unicode-display_width (1.6.1)
+    webpush (1.0.0)
+      hkdf (~> 0.2)
+      jwt (~> 2.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  rake
   rubocop
   sinatra
+  webpush
 
 BUNDLED WITH
    2.1.2
