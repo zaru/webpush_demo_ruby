@@ -11,6 +11,8 @@
 ## Development
 
 ```
+$ bundle exec rake generate_vapid
+
 $ bundle exec rackup
 $ open http://localhost:9292/
 ```
