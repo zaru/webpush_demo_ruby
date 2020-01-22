@@ -6,14 +6,27 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>WebPush Demo App</title>
   <link rel="manifest" href="/manifest.json" />
+  <style type="text/css">
+    fieldset {
+      border: none;
+      background: #fafafa;
+    }
+    input, textarea {
+      border: 1px solid #555;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0 0 10px 0;
+    }
+  </style>
 </head>
 <body>
 <h1>WebPush Demo App</h1>
 <button id="btn-enable">webpush enable</button>
 <h2>VAPID Keys</h2>
 <ul>
-  <li>PublicKey: <%= @public_key %></li>
-  <li>PrivateKey: <%= @private_key %></li>
+  <li>PublicKey: <%= public_key %></li>
+  <li>PrivateKey: <%= private_key %></li>
 </ul>
 <h2>Your WebPush information</h2>
 <ul>
@@ -21,9 +34,13 @@
   <li>p256dh: <span id="p256dh"></span></li>
   <li>auth: <span id="auth"></span></li>
 </ul>
-<button id="btn-push">Push your UserAgent</button>
+<fieldset>
+  <input type="text" id="push-title" placeholder="input push title..."><br>
+  <textarea id="push-body" placeholder="input push message..."></textarea><br>
+  <button id="btn-push">Push your UserAgent</button>
+</fieldset>
 <script>
-  window.vapidPublicKey = new Uint8Array(<%= Base64.urlsafe_decode64(@public_key).bytes %>)
+  window.vapidPublicKey = new Uint8Array(<%= Base64.urlsafe_decode64(public_key).bytes %>)
 
   document.addEventListener('DOMContentLoaded', async () => {
     await navigator.serviceWorker.register('/serviceworker.js')
@@ -54,8 +71,28 @@
     })
     showWebPushData()
   })
-  document.getElementById('btn-push').addEventListener('click', async () => {
-    // do push notification...
+
+  document.getElementById('btn-push').addEventListener('click', () => {
+    if (!document.getElementById('endpoint').innerText) {
+      alert('not allowed PushNotification API')
+      return
+    }
+    const payload = {
+      message: {
+        title: document.getElementById('push-title').value,
+        body: document.getElementById('push-body').value
+      },
+      endpoint: document.getElementById('endpoint').innerText,
+      p256dh: document.getElementById('p256dh').innerText,
+      auth: document.getElementById('auth').innerText
+    }
+    const method = 'POST'
+    const body = JSON.stringify(payload)
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+    fetch('/push', { method, headers, body })
   })
 </script>
 </body>
